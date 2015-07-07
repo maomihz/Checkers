@@ -14,12 +14,9 @@ public class Piece {
 	public static final int TYPE_BOMB = 3;
 	public static final int TYPE_SHIELD = 4;
 	
-	
 	private int mySide;
 	private boolean myIsKing;
 	Board board;
-	
-	private boolean captured;
 	
 	
 
@@ -45,6 +42,7 @@ public class Piece {
 		return TYPE_NORMAL;
 	}
 
+	
 	/**
 	 * Initializes a Piece
 	 * 
@@ -79,32 +77,7 @@ public class Piece {
 	 *            The y position of the Piece that will explode
 	 */
 	public void explode(int x, int y) {
-		// DO not explode
+		// NO explosion
 	}
-
-	/**
-	 * Signals that this Piece has begun to capture (as in it captured a Piece)
-	 */
-	public void startCapturing() {
-		captured = true;
-	}
-
-	/**
-	 * Returns whether or not this piece has captured this turn
-	 * 
-	 * @return true if the Piece has captured
-	 */
-	public boolean hasCaptured() {
-		return captured;
-	}
-	
-
-	/**
-	 * Resets the Piece for future turns
-	 */
-	public void finishCapturing() {
-		captured = false;
-	}
-	
 
 }
