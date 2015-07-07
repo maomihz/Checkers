@@ -39,8 +39,7 @@ public class Board {
 	private int side; 
 	private Date startTime;
 	private Date endTime;
-
-	private boolean captured;
+	
 	private boolean moved;
 	private boolean gameOver;
 
@@ -161,7 +160,6 @@ public class Board {
 		side = Piece.SIDE_FIRE;
 		
 		moved = false;
-		captured = false;
 		gameOver = false;
 		selected = null;
 		capturer = null;
@@ -223,9 +221,8 @@ public class Board {
 	public Piece pieceAt(int x, int y) {
 		return pieces[x][y];
 	}
-	
-	public Piece pieceAt(Point x) {
-		return pieceAt(x.x, x.y);
+	public Piece pieceAt(Point p) {
+		return pieceAt(p.x, p.y);
 	}
 
 	/**
@@ -241,9 +238,6 @@ public class Board {
 	public void place(Piece p, int x, int y) {
 		if (isValid(x, y))
 			pieces[x][y] = p;
-	}
-	public void place(Piece p, Point x) {
-		place(p, x.x, x.y);
 	}
 
 	/**
@@ -264,9 +258,6 @@ public class Board {
 			return null;
 		}
 	}
-	public Piece remove(Point x) {
-		return remove(x.x, x.y);
-	}
 
 	/**
 	 * Determines if a Piece can be selected
@@ -284,9 +275,6 @@ public class Board {
 			}
 		}
 		return false;
-	}
-	private boolean canSelect(Point x) {
-		return canSelect(x.x, x.y);
 	}
 
 	/**
@@ -307,9 +295,6 @@ public class Board {
 			selectedY = y;
 		}
 	}
-	private void select(Point x) {
-		select(x.x, x.y);
-	}
 	
 	/**
 	 * This method is important
@@ -324,9 +309,7 @@ public class Board {
 		}
 		return false;
 	}
-	public boolean isValid(Point x) {
-		return isValid(x.x, x.y);
-	}
+
 	
 	/**
 	 * 4   7 * * * 6
@@ -491,14 +474,12 @@ public class Board {
 			}
 			
 			//reset capturer first
-			captured = false;
 			capturer = null;
 			
 			//capture
 			if(Math.abs(x2 - x1) == 2 || Math.abs(y2 - y1) == 2) {
 				remove(x1 + (x2 - x1) / 2, y1 + (y2 - y1) / 2);
 				p.explode(x2, y2);
-				captured = true;
 				capturer = selected;
 			}
 			moved = true;
@@ -526,9 +507,6 @@ public class Board {
 		}
 		
 		selected = null;
-	}
-	public void move(Piece p, Point p1, Point p2) {
-		move(p, p1.x, p1.y, p2.x, p2.y);
 	}
 
 	/**
@@ -558,7 +536,6 @@ public class Board {
 			
 			moved = false;
 			selected = null;
-			captured = false;
 			capturer = null;
 		} 
 	}
