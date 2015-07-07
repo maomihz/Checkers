@@ -4,7 +4,7 @@ package com.maomihz;
 /**
  * Represents a BombPiece ins Checkers61bl
  * 
- * @author
+ * @author MaomiHz
  */
 
 public class BombPiece extends Piece {

@@ -4,7 +4,7 @@ package com.maomihz;
 /**
  * Represents a ShieldPiece in Checkers61bl
  * 
- * @author
+ * @author MaomiHz
  */
 
 public class ShieldPiece extends Piece {

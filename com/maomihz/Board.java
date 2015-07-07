@@ -2,7 +2,6 @@ package com.maomihz;
 
 import java.awt.Color;
 import java.awt.Point;
-import java.util.ArrayList;
 import java.util.Date;
 
 /*Board.java*/
@@ -10,7 +9,7 @@ import java.util.Date;
 /**
  * Represents a Board configuration of a game of Checkers61bl
  * 
- * @author
+ * @author MaomiHz
  */
 
 public class Board {
@@ -452,6 +451,7 @@ public class Board {
 			//move
 			place(p, x2, y2);
 			remove(x1, y1);
+			// Check king
 			if ((p.side() == Piece.SIDE_FIRE && y2 == 7) || (p.side() == Piece.SIDE_WATER && y2 == 0)) {
 				p.becomeKing();
 			}
@@ -483,7 +483,6 @@ public class Board {
 			gameOver = true;
 			msg = "It's a TIE!!! Press SPACE to restart";
 		}
-		
 		if (!canMove() && canEndTurn()) {
 			msg = "";
 			endTurn();
@@ -519,7 +518,6 @@ public class Board {
 				side = Piece.SIDE_FIRE;
 				msg = "Fire's Move";
 			}
-			
 			moved = false;
 			selected = null;
 			capturer = null;
@@ -528,6 +526,10 @@ public class Board {
 
 	/**
 	 * Returns the winner of the game
+	 * "Tie"
+	 * "Water"
+	 * "Fire"
+	 * "NO winner"
 	 * 
 	 * @return The winner of this game
 	 */
@@ -569,10 +571,6 @@ public class Board {
 			}
 		}
 	}
-
-	
-	
-	
 	
 	/**
 	 * Starts a game
