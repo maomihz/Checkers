@@ -1,7 +1,5 @@
 # MaomiHz's project
 
--
-
 ### Introduction
 
 This is a project for University of California Berkeley's Summer program. This is project 1. The game is a checker game with graphical user interface.
