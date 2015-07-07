@@ -371,10 +371,13 @@ public class Board {
 	 */
 	public boolean canMove(int x1, int y1, int x2, int y2) {
 		Point[] loc = getLocationAround(x1, y1);
-		
 		Piece piece = pieceAt(x1, y1);
 		Point target = new Point(x2, y2);
+		
+		// Target Occupied
 		if (pieceAt(target) != null) return false;
+		
+		// Already Moved
 		if (moved && piece != capturer) return false;
 		
 		// Regular Move
