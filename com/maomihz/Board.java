@@ -318,13 +318,13 @@ public class Board {
 	 * @param y coordinate
 	 * @return is valid or not
 	 */
-	private boolean isValid(int x, int y) {
+	public boolean isValid(int x, int y) {
 		if (x >= 0 && y >= 0 && x < 8 && y < 8) {
 			return true;
 		}
 		return false;
 	}
-	private boolean isValid(Point x) {
+	public boolean isValid(Point x) {
 		return isValid(x.x, x.y);
 	}
 	
