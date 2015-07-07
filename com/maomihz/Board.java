@@ -62,13 +62,16 @@ public class Board {
 		pieces = new Piece[8][8];
 		if (!shouldBeEmpty) {
 			newGame();
-			msg = "New Game Started, Fire's Move";
 		}
 	}
 	
 	private void drawBoard() {
 		// Clear everything
 		StdDrawPlus.clear();
+		
+		//Mouse position
+		double mx = (StdDrawPlus.mouseX() - xOffset + 0.5);
+		double my = (StdDrawPlus.mouseY() - yOffset + 0.5);
 		
 		//Paint grid
 		for (int i = 0; i < pieces.length; i++) {
@@ -93,14 +96,13 @@ public class Board {
 					StdDrawPlus.picture(i + xOffset, j + yOffset, "img/" + pieceAt(i, j).img(), 1, 1);
 				
 				// Mouse
-				int mx = (int)(StdDrawPlus.mouseX() - xOffset + 0.5);
-				int my = (int)(StdDrawPlus.mouseY() - yOffset + 0.5);
-				if(isValid(mx, my) && mx == i && my == j) {
-					StdDrawPlus.picture(i + xOffset, j + yOffset, "img/Mouse.png", 1, 1);
-				}
+				if (mx > 0 && my > 0)
+					if(isValid((int)mx, (int)my) && (int)mx == i && (int)my == j) {
+						StdDrawPlus.picture(i + xOffset, j + yOffset, "img/Mouse.png", 1, 1);
+					}
 				
 				// Selection
-				if(pieceAt(i, j) != null && selected != null && pieceAt(i, j) == selected) {
+				if(selected != null && pieceAt(i, j) == selected) {
 					StdDrawPlus.picture(i + xOffset, j + yOffset, "img/selection.png", 1, 1);
 				}
 
@@ -181,6 +183,8 @@ public class Board {
 		place(new Piece(Piece.SIDE_FIRE, this), 2, 0);
 		place(new Piece(Piece.SIDE_FIRE, this), 4, 0);
 		place(new Piece(Piece.SIDE_FIRE, this), 6, 0);
+		
+		msg = "New Game Started, Fire's Move";
 	}
 
 
@@ -466,15 +470,15 @@ public class Board {
 		if (winner.equals("Water")) {
 			endTime = new Date();
 			gameOver = true;
-			msg = "Water wins the game!!!";
+			msg = "Water wins the game!!! Press SPACE to restart";
 		} else if (winner.equals("Fire")) {
 			endTime = new Date();
 			gameOver = true;
-			msg = "Fire wins the game!!!";
+			msg = "Fire wins the game!!! Press SPACE to restart";
 		} else if (winner.equals("Tie")) {
 			endTime = new Date();
 			gameOver = true;
-			msg = "It's a TIE!!!";
+			msg = "It's a TIE!!! Press SPACE to restart";
 		}
 		
 		if (!canMove() && canEndTurn()) {
@@ -500,6 +504,9 @@ public class Board {
 	 * Ends the current turn. Changes the player.
 	 */
 	private void endTurn() {
+		if (gameOver) {
+			newGame();
+		}
 		if (canEndTurn()) {
 			if (side == Piece.SIDE_FIRE){
 				side = Piece.SIDE_WATER;
@@ -513,7 +520,7 @@ public class Board {
 			moved = false;
 			selected = null;
 			capturer = null;
-		} 
+		}
 	}
 
 	/**
