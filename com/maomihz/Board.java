@@ -14,82 +14,40 @@ import java.util.Date;
  */
 
 public class Board {
-	
 	public static Color dynamicColor1;
 	public static Color dynamicColor2;
-	public static boolean increasing1 = false;
-	public static boolean increasing2 = false;
-	{
-		dynamicColor1 = new Color(255,150,150);
-		dynamicColor2 = new Color(255,150,150);
+	{ //Static block
 		new Thread() {
 			public void run() {
 				while (true) {
-					int c = dynamicColor1.getBlue();
-					if (increasing1) {
-						c++;
-						if (c >= 170)
-							increasing1 = false;
-					} else {
-						c--;
-						if (c <= 130)
-							increasing1 = true;
-					}
-					dynamicColor1 = new Color(c, c, c);
-					try {
-						sleep(16);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}.start();
-		
-		
-		new Thread() {
-			public void run() {
-				while (true) {
-					int d = dynamicColor2.getBlue();
-					if (increasing2) {
-						d++;
-						if (d >= 170)
-							increasing2 = false;
-					} else {
-						d--;
-						if (d <= 110)
-							increasing2 = true;
-					}
-					dynamicColor2 = new Color(255,d,d);
-					try {
-						sleep(16);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+					int c = (int) (new Date().getTime() % 2550 / 20);
+					if (c > 63) c = 127 - c;
+					dynamicColor1 = new Color(c + 120, c + 120, c + 120); // Gray, 120 - 183, 120 - 183, 120 - 183
+					dynamicColor2 = new Color(255, c + 120, c + 120); //Red, 255, 120-183, 120-183
 				}
 			}
 		}.start();
 	}
 	
-	private Piece[][] pieces;
-	private int side;
-	private Date startTime;
-	private Date endTime;
-
-	
-	private double xOffset = 0.2, yOffset = 2.9;
-	private String msg;
-	
+	// Game Variables
+	private Piece[][] pieces; //Holder
 	private Piece selected;
 	private int selectedX, selectedY;
 	private Piece capturer;
 	
-	private boolean moved;
+	// GamePlay Variables
+	private int side; 
+	private Date startTime;
+	private Date endTime;
+
 	private boolean captured;
-	private boolean gameover;
-	/**
-	 * Define any variables associated with a Board object here. These variables
-	 * MUST be private.
-	 */
+	private boolean moved;
+	private boolean gameOver;
+
+	// Graphical Variables
+	private double xOffset = 0.2;
+	private double yOffset = 2.9;
+	private String msg;
 
 	/**
 	 * Constructs a new Board
@@ -103,20 +61,21 @@ public class Board {
 	
 	public Board(boolean shouldBeEmpty) {
 		pieces = new Piece[8][8];
-		msg = "New Game Started";
-		startTime = new Date();
-		side = Piece.SIDE_FIRE;
-		moved = false;
-		newGame();
+
+		if (!shouldBeEmpty) {
+			newGame();
+			msg = "New Game Started";
+		}
 	}
 	
 	private void drawBoard() {
-		StdDrawPlus.clear(); // Clear the screen
+		// Clear everything
+		StdDrawPlus.clear();
 		
 		//Paint grid
 		for (int i = 0; i < pieces.length; i++) {
 			for (int j = 0; j < pieces[0].length; j++) {
-				if ((i + j) % 2 == 0) {
+				if ((i + j) % 2 == 0) { //grid
 					if (selected != null && canMove(selectedX, selectedY, i, j)) {
 						StdDrawPlus.setPenColor(dynamicColor2);
 					} else if (selected == null && pieceAt(i, j) != null && pieceAt(i, j).side() == side && canMove(i, j)) {
@@ -187,28 +146,38 @@ public class Board {
 		//Message Text
 		StdDrawPlus.setPenColor(StdDrawPlus.BLACK);
 		StdDrawPlus.text(4, 0, msg); // The Message
-		if (gameover) {
+		if (gameOver) {
 			StdDrawPlus.text(9, 8, String.format("%02d:%02d", (endTime.getTime() - startTime.getTime()) / 1000 / 60 % 60, (endTime.getTime() - startTime.getTime()) / 1000 % 60));
 		} else {
 			StdDrawPlus.text(9, 8, String.format(new Date().getTime() % 1000 > 500 ? "%02d:%02d" : "%02d %02d", (new Date().getTime() - startTime.getTime()) / 1000 / 60 % 60, (new Date().getTime() - startTime.getTime()) / 1000 % 60));
 		}
 		
-		if (!canMove()) {
-			msg = "No Move Available, press SPACE";
-		}
 		StdDrawPlus.text(9, 8.5, "Time"); //Just a label
 		StdDrawPlus.text(9.1, 9.5, "Checkers Game"); //Just a label
 
 	}
 	
 	public void newGame() {
+		side = Piece.SIDE_FIRE;
+		
+		moved = false;
+		captured = false;
+		gameOver = false;
+		selected = null;
+		capturer = null;
+		
+		startTime = new Date();
+		endTime = null;
+		
+		// Reset the board
 		for (int i=0;i<pieces.length;i++) {
 			for (int j=0;j<pieces[i].length;j++) {
 				if (pieces[i][j] != null)
-				remove(i,j);
+					remove(i,j);
 			}
 		}
 		
+		// Long code...
 		place(new Piece(Piece.SIDE_WATER, this), 1, 7);
 		place(new Piece(Piece.SIDE_WATER, this), 3, 7);
 		place(new Piece(Piece.SIDE_WATER, this), 5, 7);
@@ -243,6 +212,7 @@ public class Board {
 
 	/**
 	 * gets the Piece at coordinates (x, y)
+	 * Remember to call isValid() before pieceAt() !!!
 	 * 
 	 * @param x
 	 *            X-coordinate of Piece to get
@@ -251,11 +221,7 @@ public class Board {
 	 * @return the Piece at (x, y)
 	 */
 	public Piece pieceAt(int x, int y) {
-		try {
-			return pieces[x][y];
-		} catch (ArrayIndexOutOfBoundsException e) {
-			throw new IllegalArgumentException();
-		}
+		return pieces[x][y];
 	}
 	
 	public Piece pieceAt(Point x) {
@@ -273,7 +239,7 @@ public class Board {
 	 *            Y coordinate of Piece to place
 	 */
 	public void place(Piece p, int x, int y) {
-		if (x >= 0 && y >= 0 && x < 8 && y < 8)
+		if (isValid(x, y))
 			pieces[x][y] = p;
 	}
 	public void place(Piece p, Point x) {
@@ -290,9 +256,13 @@ public class Board {
 	 * @return Piece that was removed
 	 */
 	public Piece remove(int x, int y) {
-		Piece piece = pieces[x][y];
-		pieces[x][y] = null;
-		return piece;
+		if (isValid(x, y)) {
+			Piece piece = pieces[x][y];
+			pieces[x][y] = null;
+			return piece;
+		} else {
+			return null;
+		}
 	}
 	public Piece remove(Point x) {
 		return remove(x.x, x.y);
@@ -307,15 +277,15 @@ public class Board {
 	 *            Y coordinate of Piece to select
 	 * @return true if the Piece can be selected
 	 */
-	public boolean canSelect(int x, int y) {
-		if (x >= 0 && y >= 0 && x < 8 && y < 8 && pieceAt(x, y) != null) {
+	private boolean canSelect(int x, int y) {
+		if (isValid(x, y) && pieceAt(x, y) != null) {
 			if (side == pieceAt(x, y).side() && canMove(x, y)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	public boolean canSelect(Point x) {
+	private boolean canSelect(Point x) {
 		return canSelect(x.x, x.y);
 	}
 
@@ -329,7 +299,7 @@ public class Board {
 	 * @param y
 	 *            Y coordinate of place to select
 	 */
-	public void select(int x, int y) {
+	private void select(int x, int y) {
 		if (canSelect(x, y)) {
 			selected = null;
 			selected = pieceAt(x, y);
@@ -337,58 +307,72 @@ public class Board {
 			selectedY = y;
 		}
 	}
-	public void select(Point x) {
+	private void select(Point x) {
 		select(x.x, x.y);
 	}
 	
-	public boolean isValid(int x, int y) {
+	/**
+	 * This method is important
+	 * Check the x, y coordinate is in the board
+	 * @param x coordinate
+	 * @param y coordinate
+	 * @return is valid or not
+	 */
+	private boolean isValid(int x, int y) {
 		if (x >= 0 && y >= 0 && x < 8 && y < 8) {
 			return true;
 		}
 		return false;
 	}
-	public boolean isValid(Point x) {
+	private boolean isValid(Point x) {
 		return isValid(x.x, x.y);
 	}
 	
-	public Point[] getLocationAround(int x, int y) {
+	/**
+	 * 4   7 * * * 6
+	 * 3   * 3 * 2 *
+	 * 2   * * o * *
+	 * 1   * 1 * 0 *
+	 * 0   5 * * * 4
+	 * 
+	 *     0 1 2 3 4
+	 * @param x coordinate
+	 * @param y coordinate
+	 * @return The point array, 8 elements. Graph above. 
+	 */
+	private Point[] getLocationAround(int x, int y) {
 		Point[] p = new Point[8];
-		
-		//0, 1: water's move
 		if (isValid(x + 1, y - 1)) {
 			p[0] = new Point(x+1, y-1);
 		}
 		if (isValid(x - 1, y - 1)) {
 			p[1] = new Point(x-1, y-1);
 		}
-		
-		//2, 3: fire's move
 		if (isValid(x + 1, y + 1)) {
 			p[2] = new Point(x+1, y+1);
 		}
 		if (isValid(x - 1, y + 1)) {
 			p[3] = new Point(x-1, y+1);
 		}
-		
-		//4, 5: water's move
 		if (isValid(x + 2, y - 2)) {
 			p[4] = new Point(x+2, y-2);
 		}
 		if (isValid(x - 2, y - 2)) {
 			p[5] = new Point(x-2, y-2);
 		}
-		
-		//6, 7: fire's move
 		if (isValid(x + 2, y + 2)) {
 			p[6] = new Point(x+2, y+2);
 		}
 		if (isValid(x - 2, y + 2)) {
 			p[7] = new Point(x-2, y+2);
 		}
-		
 		return p;
 	}
 	
+	/**
+	 * Determine whether the current side can move
+	 * @return can move or not
+	 */
 	public boolean canMove() {
 		for (int i=0;i<pieces.length;i++) {
 			for (int j=0;j<pieces[i].length;j++) {
@@ -399,10 +383,14 @@ public class Board {
 		}
 		return false;
 	}
-	
+	/**
+	 * Determine whether a piece at the location can move
+	 * @param x the x coordinate of the piece
+	 * @param y the y coordinate of the piece
+	 * @return can move or not
+	 */
 	public boolean canMove(int x, int y) {
-		Point[] plist = getLocationAround(x, y);
-		for (Point p : plist) {
+		for (Point p : getLocationAround(x, y)) {
 			if (p != null && canMove(x, y, p.x, p.y)) {
 				return true;
 			}
@@ -410,13 +398,20 @@ public class Board {
 		return false;
 	}
 	
+	/**
+	 * Determine whether a piece at the location can move to the target
+	 * @param x1 x coordinate of the piece
+	 * @param y1 y coordinate of the piece
+	 * @param x2 x coordinate of the target
+	 * @param y2 y coordinate of the target
+	 * @return can move or not
+	 */
 	public boolean canMove(int x1, int y1, int x2, int y2) {
-		Piece piece = pieceAt(x1, y1);
 		Point[] loc = getLocationAround(x1, y1);
+		
+		Piece piece = pieceAt(x1, y1);
 		Point target = new Point(x2, y2);
-		
 		if (pieceAt(target) != null) return false;
-		
 		if (moved && piece != capturer) return false;
 		
 		// Regular Move
@@ -470,6 +465,8 @@ public class Board {
 		}
 		return false;
 	}
+	
+	
 	/**
 	 * Moves the active piece to coordinate (x, y)
 	 * 
@@ -504,23 +501,27 @@ public class Board {
 				captured = true;
 				capturer = selected;
 			}
-			
 			moved = true;
 		}
 		
+		//Check win
 		String winner = winner();
 		if (winner.equals("Water")) {
 			endTime = new Date();
-			gameover = true;
+			gameOver = true;
 			msg = "Water wins the game!!!";
 		} else if (winner.equals("Fire")) {
 			endTime = new Date();
-			gameover = true;
+			gameOver = true;
 			msg = "Fire wins the game!!!";
 		} else if (winner.equals("Tie")) {
 			endTime = new Date();
-			gameover = true;
+			gameOver = true;
 			msg = "It's a TIE!!!";
+		}
+		
+		if (!canMove()) {
+			msg = "No Move Available, press SPACE";
 		}
 		
 		selected = null;
@@ -534,8 +535,8 @@ public class Board {
 	 * 
 	 * @return true if the turn can end
 	 */
-	public boolean canEndTurn() {
-		if (moved) 
+	private boolean canEndTurn() {
+		if (moved && !gameOver) 
 			return true;
 		return false;
 	}
@@ -543,7 +544,7 @@ public class Board {
 	/**
 	 * Ends the current turn. Changes the player.
 	 */
-	public void endTurn() {
+	private void endTurn() {
 		if (canEndTurn()) {
 			if (side == Piece.SIDE_FIRE){
 				side = Piece.SIDE_WATER;
@@ -566,7 +567,7 @@ public class Board {
 	 * 
 	 * @return The winner of this game
 	 */
-	public String winner() {
+	private String winner() {
 		int fire = 0;
 		int water = 0;
 		for (int i=0;i<pieces.length;i++) {
@@ -591,7 +592,7 @@ public class Board {
 		}
 	}
 	
-	public void mouseMove() {
+	private void mouseMove() {
 		int x = (int)(StdDrawPlus.mouseX() - xOffset + 0.5);
 		int y = (int)(StdDrawPlus.mouseY() - yOffset + 0.5);
 		if (isValid(x, y)) {

@@ -26,10 +26,12 @@ public class BombPiece extends Piece {
 		super(side,b);
 	}
 	
+	@Override
 	public int type() {
 		return Piece.TYPE_BOMB;
 	}
 	
+	@Override
 	public void explode(int x, int y) {
 		for (int i=x-1; i<=x+1; i++) {
 			for (int j=y-1; j<=y+1; j++) {
