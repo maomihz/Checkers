@@ -18,10 +18,22 @@ public class Piece {
 	
 	private int mySide; //Side of the piece
 	private boolean myIsKing; // is king piece or not
-	
 	Board board; //The board it's on
-	String imagePath; //The Image to paint
-
+	
+	
+	/**
+	 * Initializes a Piece
+	 * 
+	 * @param side
+	 *            The side of the Piece
+	 * @param b
+	 *            The Board the Piece is on
+	 */
+	public Piece(int side, Board b) {
+		mySide = side;
+		board = b;
+	}
+	
 	/**
 	 * Returns the side that the piece is on
 	 * 
@@ -49,22 +61,15 @@ public class Piece {
 	 * @return type
 	 */
 	public int type() {
-		return TYPE_NORMAL;
+		return Piece.TYPE_NORMAL;
+	}
+	
+	public String img() {
+		return "pawn-" + (side() == SIDE_FIRE ? "fire" : "water") + (isKing() ? "-crowned" : "") + ".png";
 	}
 
 	
-	/**
-	 * Initializes a Piece
-	 * 
-	 * @param side
-	 *            The side of the Piece
-	 * @param b
-	 *            The Board the Piece is on
-	 */
-	public Piece(int side, Board b) {
-		mySide = side;
-		board = b;
-	}
+
 
 	/**
 	 * Destroys the piece at x, y. ShieldPieces do not blow up

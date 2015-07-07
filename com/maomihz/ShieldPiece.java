@@ -29,6 +29,11 @@ public class ShieldPiece extends Piece {
 	}
 	
 	@Override
+	public String img() {
+		return "shield-" + (side() == SIDE_FIRE ? "fire" : "water") + (isKing() ? "-crowned" : "") + ".png";
+	}
+	
+	@Override
 	public void blowUp(int x, int y) {
 		
 	}

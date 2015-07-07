@@ -32,6 +32,11 @@ public class BombPiece extends Piece {
 	}
 	
 	@Override
+	public String img() {
+		return "bomb-" + (side() == SIDE_FIRE ? "fire" : "water") + (isKing() ? "-crowned" : "") + ".png";
+	}
+	
+	@Override
 	public void explode(int x, int y) {
 		for (int i=x-1; i<=x+1; i++) {
 			for (int j=y-1; j<=y+1; j++) {

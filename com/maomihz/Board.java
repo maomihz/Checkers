@@ -60,10 +60,9 @@ public class Board {
 	
 	public Board(boolean shouldBeEmpty) {
 		pieces = new Piece[8][8];
-
 		if (!shouldBeEmpty) {
 			newGame();
-			msg = "New Game Started";
+			msg = "New Game Started, Fire's Move";
 		}
 	}
 	
@@ -90,31 +89,8 @@ public class Board {
 				StdDrawPlus.filledSquare(i + xOffset, j + yOffset, 0.5);
 				
 				// Picture
-				String filename = "";
-				if (pieces[i][j] != null) {
-					switch (pieces[i][j].type()) {
-					case Piece.TYPE_BOMB:
-						filename += "bomb-";
-						break;
-					case Piece.TYPE_NORMAL:
-						filename += "pawn-";
-						break;
-					case Piece.TYPE_SHIELD:
-						filename += "shield-";
-						break;
-					}
-					if (pieces[i][j].side() == Piece.SIDE_FIRE) {
-						filename += "fire-";
-					} else {
-						filename += "water-";
-					}
-					if (pieces[i][j].isKing()) {
-						filename += "crowned";
-					} else {
-						filename = filename.substring(0, filename.length() - 1);
-					}
-					StdDrawPlus.picture(i + xOffset, j + yOffset, "img/" + filename + ".png", 1, 1);
-				}
+				if (pieceAt(i, j) != null)
+					StdDrawPlus.picture(i + xOffset, j + yOffset, "img/" + pieceAt(i, j).img(), 1, 1);
 				
 				// Mouse
 				int mx = (int)(StdDrawPlus.mouseX() - xOffset + 0.5);
