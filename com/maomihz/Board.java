@@ -520,8 +520,9 @@ public class Board {
 			msg = "It's a TIE!!!";
 		}
 		
-		if (!canMove()) {
-			msg = "No Move Available, press SPACE";
+		if (!canMove() && canEndTurn()) {
+			msg = "";
+			endTurn();
 		}
 		
 		selected = null;
