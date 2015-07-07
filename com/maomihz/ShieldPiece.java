@@ -8,12 +8,9 @@ package com.maomihz;
  */
 
 public class ShieldPiece extends Piece {
+	
 
-	/**
-	 * Define any variables associated with a ShieldPiece object here. These
-	 * variables MUST be private or package private.
-	 */
-
+	
 	/**
 	 * Constructs a new ShieldPiece
 	 * 
@@ -22,16 +19,18 @@ public class ShieldPiece extends Piece {
 	 * @param b
 	 *            Board that this ShieldPiece belongs to
 	 */
-
-	public int type() {
-		return Piece.TYPE_SHIELD;
-	}
 	public ShieldPiece(int side, Board b) {
 		super(side,b);
 	}
 	
+	@Override
+	public int type() {
+		return Piece.TYPE_SHIELD;
+	}
+	
+	@Override
 	public void blowUp(int x, int y) {
-		//Do nothing
+		
 	}
 
 }

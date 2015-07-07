@@ -8,17 +8,19 @@ package com.maomihz;
  */
 
 public class Piece {
+	
+	// Side and Type constants
 	public static final int SIDE_FIRE = 0;
 	public static final int SIDE_WATER = 1;
 	public static final int TYPE_NORMAL = 2;
 	public static final int TYPE_BOMB = 3;
 	public static final int TYPE_SHIELD = 4;
 	
-	private int mySide;
-	private boolean myIsKing;
-	Board board;
+	private int mySide; //Side of the piece
+	private boolean myIsKing; // is king piece or not
 	
-	
+	Board board; //The board it's on
+	String imagePath; //The Image to paint
 
 	/**
 	 * Returns the side that the piece is on
@@ -26,18 +28,26 @@ public class Piece {
 	 * @return 0 if the piece is fire and 1 if the piece is water
 	 */
 	
+	// Return the side of the piece
 	public int side() {
 		return mySide;
 	}
 
+	//Is a king piece
 	public boolean isKing() {
 		return myIsKing;
 	}
 	
+	// Become a king piece(cannot go back)
 	public void becomeKing() {
 		myIsKing = true;
 	}
 	
+	/**
+	 *  Return the type of the piece
+	 *  
+	 * @return type
+	 */
 	public int type() {
 		return TYPE_NORMAL;
 	}
@@ -77,7 +87,6 @@ public class Piece {
 	 *            The y position of the Piece that will explode
 	 */
 	public void explode(int x, int y) {
-		// NO explosion
 	}
 
 }
